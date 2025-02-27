@@ -11,6 +11,8 @@
 		8999F8D62BD6FA9100437DCF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8999F8D52BD6FA9100437DCF /* ContentView.swift */; };
 		8999F8D82BD6FA9200437DCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8999F8D72BD6FA9200437DCF /* Assets.xcassets */; };
 		8999F8DB2BD6FA9200437DCF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8999F8DA2BD6FA9200437DCF /* Preview Assets.xcassets */; };
+		899A6C8D2D70150B00DECC49 /* ReceiptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 899A6C8C2D70150600DECC49 /* ReceiptView.swift */; };
+		899A6C8F2D70209E00DECC49 /* ReceiptInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 899A6C8E2D70209600DECC49 /* ReceiptInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		8999F8D52BD6FA9100437DCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8999F8D72BD6FA9200437DCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8999F8DA2BD6FA9200437DCF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		899A6C8C2D70150600DECC49 /* ReceiptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptView.swift; sourceTree = "<group>"; };
+		899A6C8E2D70209600DECC49 /* ReceiptInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +56,9 @@
 			isa = PBXGroup;
 			children = (
 				8999F8D32BD6FA9100437DCF /* ScanPayApp.swift */,
+				899A6C8E2D70209600DECC49 /* ReceiptInfo.swift */,
 				8999F8D52BD6FA9100437DCF /* ContentView.swift */,
+				899A6C8C2D70150600DECC49 /* ReceiptView.swift */,
 				8999F8D72BD6FA9200437DCF /* Assets.xcassets */,
 				8999F8D92BD6FA9200437DCF /* Preview Content */,
 			);
@@ -137,6 +143,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				899A6C8F2D70209E00DECC49 /* ReceiptInfo.swift in Sources */,
+				899A6C8D2D70150B00DECC49 /* ReceiptView.swift in Sources */,
 				8999F8D62BD6FA9100437DCF /* ContentView.swift in Sources */,
 				8999F8D42BD6FA9100437DCF /* ScanPayApp.swift in Sources */,
 			);
@@ -275,6 +283,8 @@
 				DEVELOPMENT_TEAM = ZJZGU3H9BZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow permission to use the camera so the app can scan your receipt!";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow permission to access camera roll for receipts!";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -304,6 +314,8 @@
 				DEVELOPMENT_TEAM = ZJZGU3H9BZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Please allow permission to use the camera so the app can scan your receipt!";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Please allow permission to access camera roll for receipts!";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
