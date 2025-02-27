@@ -105,8 +105,10 @@ struct ContentView: View {
                         }
                     }
                     .padding(.horizontal)
+                    let restaurantInfo = viewModel.restaurantInfo
                     
-                    if let restaurantInfo = viewModel.restaurantInfo, !restaurantInfo.name.isEmpty {
+//                    if let restaurantInfo = viewModel.restaurantInfo, !restaurantInfo.name.isEmpty {
+                    if !restaurantInfo.name.isEmpty {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(restaurantInfo.name)
                                 .font(.headline)
