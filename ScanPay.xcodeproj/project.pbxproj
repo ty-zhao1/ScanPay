@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8930A1862D72CB960044E809 /* BillSplittingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8930A1852D72CB930044E809 /* BillSplittingView.swift */; };
+		8930A1882D72CBE90044E809 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8930A1872D72CBE70044E809 /* ScannerView.swift */; };
 		8999F8D42BD6FA9100437DCF /* ScanPayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8999F8D32BD6FA9100437DCF /* ScanPayApp.swift */; };
 		8999F8D62BD6FA9100437DCF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8999F8D52BD6FA9100437DCF /* ContentView.swift */; };
 		8999F8D82BD6FA9200437DCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8999F8D72BD6FA9200437DCF /* Assets.xcassets */; };
@@ -15,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8930A1852D72CB930044E809 /* BillSplittingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillSplittingView.swift; sourceTree = "<group>"; };
+		8930A1872D72CBE70044E809 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
 		8999F8D02BD6FA9100437DCF /* ScanPay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScanPay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8999F8D32BD6FA9100437DCF /* ScanPayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPayApp.swift; sourceTree = "<group>"; };
 		8999F8D52BD6FA9100437DCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +60,8 @@
 				8999F8D32BD6FA9100437DCF /* ScanPayApp.swift */,
 				899A6C8E2D70209600DECC49 /* ReceiptInfo.swift */,
 				8999F8D52BD6FA9100437DCF /* ContentView.swift */,
+				8930A1872D72CBE70044E809 /* ScannerView.swift */,
+				8930A1852D72CB930044E809 /* BillSplittingView.swift */,
 				8999F8D72BD6FA9200437DCF /* Assets.xcassets */,
 				8999F8D92BD6FA9200437DCF /* Preview Content */,
 			);
@@ -142,7 +148,9 @@
 			files = (
 				899A6C8F2D70209E00DECC49 /* ReceiptInfo.swift in Sources */,
 				8999F8D62BD6FA9100437DCF /* ContentView.swift in Sources */,
+				8930A1862D72CB960044E809 /* BillSplittingView.swift in Sources */,
 				8999F8D42BD6FA9100437DCF /* ScanPayApp.swift in Sources */,
+				8930A1882D72CBE90044E809 /* ScannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,213 +5,229 @@
 //  Created by Adam Zhao on 4/22/24.
 //
 import SwiftUI
-
+import VisionKit
+import Vision
 //
 
-
-//// Fixed ImagePicker implementation
-struct ImagePicker: UIViewControllerRepresentable {
-    var sourceType: UIImagePickerController.SourceType
-    var onImagePicked: (UIImage) -> Void
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        picker.sourceType = sourceType
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onImagePicked: onImagePicked)
-    }
-    
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        var onImagePicked: (UIImage) -> Void
-        
-        init(onImagePicked: @escaping (UIImage) -> Void) {
-            self.onImagePicked = onImagePicked
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                onImagePicked(image)
-            }
-            picker.dismiss(animated: true)
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
-    }
-}
-
-// Enhanced ContentView to display restaurant info and better item display
 struct ContentView: View {
-    @StateObject private var viewModel = ReceiptScannerModel()
+    @StateObject private var viewModel = ReceiptViewModel()
     @State private var showingImagePicker = false
+    @State private var showingScanner = false
+    @State private var selectedImage: UIImage?
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 15) {
-                    if let image = viewModel.capturedImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 200)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    }
-                    
-                    if !viewModel.processingStatus.isEmpty {
-                        Text(viewModel.processingStatus)
-                            .foregroundColor(viewModel.processingStatus.contains("Error") || viewModel.processingStatus.contains("No") ? .red : .blue)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    
-                    HStack(spacing: 15) {
-                        Button(action: {
-                            self.sourceType = .photoLibrary
-                            self.showingImagePicker = true
-                        }) {
-                            HStack {
-                                Image(systemName: "photo.on.rectangle")
-                                Text("Choose Photo")
-                            }
-                            .frame(maxWidth: .infinity)
+            VStack {
+                if viewModel.receipt == nil {
+                    receiptScanView
+                } else {
+                    NavigationLink(destination: BillSplittingView(viewModel: viewModel)) {
+                        Text("Continue to Bill Splitting")
+                            .font(.headline)
                             .padding()
                             .background(Color.blue)
                             .foregroundColor(.white)
                             .cornerRadius(10)
-                        }
-                        
-                        Button(action: {
-                            self.sourceType = .camera
-                            self.showingImagePicker = true
-                        }) {
-                            HStack {
-                                Image(systemName: "camera")
-                                Text("Take Photo")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
                     }
-                    .padding(.horizontal)
-                    let restaurantInfo = viewModel.restaurantInfo
+                    .padding(.bottom)
                     
-//                    if let restaurantInfo = viewModel.restaurantInfo, !restaurantInfo.name.isEmpty {
-                    if !restaurantInfo.name.isEmpty {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(restaurantInfo.name)
+                    ScrollView {
+                        VStack(alignment: .leading) {
+                            Text("Extracted Items")
                                 .font(.headline)
+                                .padding([.horizontal, .top])
                             
-                            ForEach(restaurantInfo.address, id: \.self) { line in
-                                Text(line)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                            
-                            if !restaurantInfo.phone.isEmpty {
-                                Text(restaurantInfo.phone)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                    }
-                    
-                    if !viewModel.receipt.items.isEmpty {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("Items")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            
-                            ForEach(viewModel.receipt.items) { item in
+                            ForEach(viewModel.receipt?.items ?? []) { item in
                                 HStack {
                                     Text(item.name)
-                                        .fixedSize(horizontal: false, vertical: true)
+                                        .font(.body)
                                     Spacer()
                                     Text("$\(String(format: "%.2f", item.price))")
+                                        .font(.body)
                                 }
-                                .padding(.vertical, 8)
                                 .padding(.horizontal)
-                                .background(Color(.systemBackground))
-                                .cornerRadius(8)
+                                .padding(.vertical, 4)
                             }
-                            .padding(.horizontal)
                             
                             Divider()
-                                .padding(.vertical)
                             
-                            VStack(spacing: 10) {
-                                Text("Summary")
+                            HStack {
+                                Text("Subtotal")
                                     .font(.headline)
-                                    .padding(.horizontal)
-                                
-                                HStack {
-                                    Text("Subtotal")
-                                    Spacer()
-                                    Text("$\(String(format: "%.2f", viewModel.receipt.subtotal))")
-                                }
-                                .padding(.horizontal)
-                                
-                                HStack {
-                                    Text("Tax")
-                                    Spacer()
-                                    Text("$\(String(format: "%.2f", viewModel.receipt.tax))")
-                                }
-                                .padding(.horizontal)
-                                
-                                HStack {
-                                    Text("Total").bold()
-                                    Spacer()
-                                    Text("$\(String(format: "%.2f", viewModel.receipt.total))").bold()
-                                }
-                                .padding(.horizontal)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", viewModel.receipt?.subtotal ?? 0))")
+                                    .font(.headline)
                             }
-                            .padding(.vertical, 10)
-                            .background(Color(.systemGray6))
+                            .padding(.horizontal)
+                            
+                            HStack {
+                                Text("Total")
+                                    .font(.headline)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", viewModel.receipt?.grandTotal ?? 0))")
+                                    .font(.headline)
+                            }
+                            .padding(.horizontal)
+                            .padding(.bottom)
+                            
+                            Button("Scan Another Receipt") {
+                                viewModel.receipt = nil
+                                viewModel.recognizedText = ""
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.2))
                             .cornerRadius(10)
                             .padding(.horizontal)
-                        }
-                    } else if viewModel.processingStatus == "Processing complete" {
-                        VStack {
-                            Spacer()
-                            Text("No items detected. Please try scanning again with a clearer image.")
-                                .foregroundColor(.gray)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                            Spacer()
-                        }
-                    } else if viewModel.processingStatus.isEmpty {
-                        VStack {
-                            Spacer()
-                            Text("Scan a receipt to get started")
-                                .foregroundColor(.gray)
-                                .padding()
-                            Spacer()
                         }
                     }
                 }
-                .padding(.bottom, 20)
             }
             .navigationTitle("Receipt Scanner")
             .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(sourceType: sourceType, onImagePicked: { image in
-                    viewModel.processReceipt(image: image)
-                })
+                ImagePicker(image: $selectedImage, sourceType: sourceType)
+                    .onDisappear {
+                        if let image = selectedImage {
+                            recognizeText(from: image)
+                        }
+                    }
             }
+            .sheet(isPresented: $showingScanner) {
+                ScannerView { result in
+                    switch result {
+                    case .success(let text):
+                        viewModel.recognizedText = text
+                        viewModel.parseReceiptFromText(text)
+                        // Debug print
+                        viewModel.printRecognizedText()
+                    case .failure(let error):
+                        print("Scanning error: \(error.localizedDescription)")
+                    }
+                    showingScanner = false
+                }
+            }
+            .onAppear {
+                viewModel.initialize()
+            }
+        }
+    }
+    
+    var receiptScanView: some View {
+        VStack(spacing: 30) {
+            VStack {
+                Image(systemName: "doc.text.viewfinder")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .foregroundColor(.blue)
+                
+                Text("Scan or select a receipt to get started")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            
+            VStack(spacing: 15) {
+                Button(action: {
+                    sourceType = .camera
+                    showingImagePicker = true
+                }) {
+                    Label("Take a Photo", systemImage: "camera")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                
+                Button(action: {
+                    sourceType = .photoLibrary
+                    showingImagePicker = true
+                }) {
+                    Label("Choose from Library", systemImage: "photo.on.rectangle")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                
+                Button(action: {
+                    showingScanner = true
+                }) {
+                    Label("Use Document Scanner", systemImage: "doc.viewfinder")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.orange)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                
+                Button(action: {
+                    // Demo data for testing with the example receipt you provided
+                    let demoItems = [
+                        ReceiptItem(name: "1 Fish Cake Soft Tofu", price: 19.94),
+                        ReceiptItem(name: "   Not Spicy", price: 0.0),
+                        ReceiptItem(name: "1 Beef Soft Tofu", price: 19.94),
+                        ReceiptItem(name: "   Mild", price: 0.0),
+                        ReceiptItem(name: "   Add Egg", price: 0.50),
+                        ReceiptItem(name: "1 Haemul Pajun", price: 22.69),
+                        ReceiptItem(name: "1 Seafood Soft Tofu", price: 19.94),
+                        ReceiptItem(name: "   Medium", price: 0.50),
+                        ReceiptItem(name: "   Add Egg", price: 1.00),
+                        ReceiptItem(name: "   Add Rice Cake", price: 0.0)
+                    ]
+                    viewModel.receipt = Receipt(items: demoItems, subtotal: 84.51, grandTotal: 92.22)
+                }) {
+                    Label("Use Demo Receipt", systemImage: "square.and.pencil")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.gray)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding()
+    }
+    
+    func recognizeText(from image: UIImage) {
+        guard let cgImage = image.cgImage else { return }
+        
+        // Create a new image-request handler
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage)
+        
+        // Create a new request to recognize text
+        let request = VNRecognizeTextRequest { request, error in
+            if let error = error {
+                print("Failed to recognize text: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+            
+            let recognizedText = observations.compactMap { observation in
+                observation.topCandidates(1).first?.string
+            }.joined(separator: "\n")
+            
+            DispatchQueue.main.async {
+                viewModel.recognizedText = recognizedText
+                viewModel.parseReceiptFromText(recognizedText)
+                // Debug print
+                viewModel.printRecognizedText()
+            }
+        }
+        
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
+        
+        // Process the request
+        do {
+            try requestHandler.perform([request])
+        } catch {
+            print("Unable to perform the request: \(error.localizedDescription)")
         }
     }
 }
